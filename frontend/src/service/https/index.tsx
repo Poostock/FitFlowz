@@ -1,3 +1,4 @@
+import { BookingInterface } from "../../interfaces/IBooking";
 import { ClassesInterface } from "../../interfaces/IClass";
 import { ClassTypesInterface } from "../../interfaces/IClassType";
 
@@ -208,17 +209,17 @@ async function GetBookingId(id: number | undefined) {
     return await fetchData(`${apiUrl}/class/${id}`, requestOptions);
 }
 
-async function CreateBooking(data: ClassesInterface) {
+async function CreateBooking(data: BookingInterface) {
     const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
     };
 
-    return await fetchData(`${apiUrl}/classes`, requestOptions);
+    return await fetchData(`${apiUrl}/bookings`, requestOptions);
 }
 
-async function UpdateBooking(data: ClassesInterface) {
+async function UpdateBooking(data: BookingInterface) {
     const requestOptions = {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

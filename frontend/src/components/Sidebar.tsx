@@ -3,9 +3,8 @@ import { useState } from "react";
 import { IoIosFitness } from "react-icons/io";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { RiDashboardFill } from "react-icons/ri";
-import { MdOutlineSpaceDashboard, MdFitnessCenter, MdPeople } from "react-icons/md";
-import { LuUsers } from "react-icons/lu";
-import { FaRegClock, FaMoneyBills } from "react-icons/fa6";
+import { MdFitnessCenter } from "react-icons/md";
+import { FaRegClock } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
 import { FaRegDotCircle } from "react-icons/fa";
 
