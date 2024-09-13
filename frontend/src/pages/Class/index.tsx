@@ -1,8 +1,15 @@
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import { FaRegCircleUser } from "react-icons/fa6";
 import FitnessClassCard, { FitnessClass } from "../../components/FitnessClassCard";
 import { GetClasses } from "../../service/https";
+
+// Extend dayjs to use timezone
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface ClassType {
   ID: number;

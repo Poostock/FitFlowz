@@ -3,6 +3,12 @@ import { MdPeople } from "react-icons/md";
 import { CreateBooking } from "../service/https"; // ตรวจสอบ path ให้ถูกต้อง
 import { BookingInterface } from "../interfaces/IBooking";
 import toast, { Toaster } from "react-hot-toast";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // Interface for fitness class
 export interface FitnessClass {
@@ -91,8 +97,8 @@ const FitnessClassCard: React.FC<FitnessClassCardProps> = ({ fitnessClass }) => 
           <h2 className="text-xl md:text-2xl text-iconUser">{name}</h2>
           <p className="text-iconUser">{description}</p>
           <div className="text-iconUser mt-2">
-            <p>{date}</p>
-            <p>{time}</p>
+            <p>{dayjs.tz(date, "Asia/Bangkok").format("D MMM YYYY")}</p>
+            <p>{dayjs.tz(time, "Asia/Bangkok").format("HH:mm")} - {dayjs.tz(time, "Asia/Bangkok").format("HH:mm")}</p>
           </div>
           <p className="text-iconUser">By {coach}</p>
         </div>
