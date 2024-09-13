@@ -19,7 +19,7 @@ interface MenuItem {
 
 const SideBar: React.FC = () => {
     const [open, setOpen] = useState<boolean>(true);
-    const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null); // เก็บเมนูย่อยที่เปิดอยู่
+    // const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null); // เก็บเมนูย่อยที่เปิดอยู่
     const location = useLocation();
 
     const Menus: MenuItem[] = [
