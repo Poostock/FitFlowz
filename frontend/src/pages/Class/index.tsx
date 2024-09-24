@@ -37,7 +37,7 @@ interface ClassData {
 const ClassComponent: React.FC = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [classes, setClasses] = useState<ClassData[]>([]);
-  const [member, setMember] = useState<MembersInterface | null>(null); // ดึงข้อมูลสมาชิก
+  const [member, setMember] = useState<MembersInterface | null>(null); // Fetch or set member data
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -50,26 +50,32 @@ const ClassComponent: React.FC = () => {
         setClasses(res);
       }
     } catch (error) {
-      console.error("ดึงข้อมูลคลาสล้มเหลว", error);
+      console.error("Failed to fetch classes", error);
     }
   };
-
+  
   const fetchMember = async () => {
     try {
-      const res = await GetMembers();
-      if (res && res.ID) { // ตรวจสอบว่ามีข้อมูล ID ของสมาชิก
-        setMember(res);  
+      const res: MembersInterface[] = await GetMembers(); // Assuming GetMembers returns an array of MembersInterface
+      if (res && res.length > 0) {
+        const loggedInMember = res.find((member: MembersInterface) => member.ID); // Ensure correct typing for 'member'
+        if (loggedInMember) {
+          setMember(loggedInMember);
+        } else {
+          console.error("No valid member found");
+        }
       } else {
-        console.error("ไม่พบข้อมูลสมาชิกหรือ ID ไม่ถูกต้อง");
+        console.error("Member data is empty or invalid");
       }
     } catch (error) {
-      console.error("ดึงข้อมูลสมาชิกล้มเหลว", error);
+      console.error("Failed to fetch member", error);
     }
   };
+  
 
   useEffect(() => {
     fetchClasses();
-    fetchMember(); // ดึงข้อมูลสมาชิก
+    fetchMember(); // Fetch member data here
   }, []);
 
   const mapToFitnessClass = (classData: ClassData): FitnessClass => ({
@@ -81,7 +87,7 @@ const ClassComponent: React.FC = () => {
     time: classData.EndDate,
     coach: classData.Trainer.Name,
     image: classData.ClassPic,
-    maxParticipants: 40, 
+    maxParticipants: 40, // You can update this to match your data
     currentParticipants: classData.ParticNum,
   });
 
@@ -107,13 +113,13 @@ const ClassComponent: React.FC = () => {
         </div>
         <div className="grid gap-4 grid-cols-2 p-4">
           {!member ? (
-            <p className="text-red-500">กรุณาล็อกอินเพื่อจองคลาส</p>
+            <p className="text-red-500">Please log in to book a class.</p>
           ) : (
             classes.map((fitnessClass) => (
               <FitnessClassCard 
                 key={fitnessClass.ID} 
                 fitnessClass={mapToFitnessClass(fitnessClass)} 
-                member={member}  // ส่งข้อมูล member
+                member={member}  // Pass member data
               />
             ))
           )}
