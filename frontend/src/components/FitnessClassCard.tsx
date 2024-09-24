@@ -1,14 +1,21 @@
 import React, { useState } from "react";
 import { MdPeople } from "react-icons/md";
-import { CreateBooking } from "../service/https"; // ตรวจสอบ path ให้ถูกต้อง
+import { CreateBooking } from "../service/https"; // Ensure the path is correct
 import { BookingInterface } from "../interfaces/IBooking";
 import toast, { Toaster } from "react-hot-toast";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { MembersInterface } from "../interfaces/IMember";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+// Combined interface for FitnessClassCard props
+interface FitnessClassCardProps {
+  fitnessClass: FitnessClass;
+  member: MembersInterface; // Include member prop
+}
 
 // Interface for fitness class
 export interface FitnessClass {
@@ -25,11 +32,7 @@ export interface FitnessClass {
   onBooking?: () => void; // Optional
 }
 
-interface FitnessClassCardProps {
-  fitnessClass: FitnessClass;
-}
-
-const FitnessClassCard: React.FC<FitnessClassCardProps> = ({ fitnessClass }) => {
+const FitnessClassCard: React.FC<FitnessClassCardProps> = ({ fitnessClass, member }) => {
   const { id, name, type, description, date, time, coach, image, maxParticipants, onBooking } = fitnessClass;
 
   const [currentParticipants, setCurrentParticipants] = useState<number>(fitnessClass.currentParticipants);
@@ -43,21 +46,28 @@ const FitnessClassCard: React.FC<FitnessClassCardProps> = ({ fitnessClass }) => 
     const data: BookingInterface = {
       DateBooking: currDate,
       ClassID: id,
-      MemberID: 1
+      MemberID: member.ID // Ensure member.ID is used correctly
     };
+
+    // Check if member ID is valid
+    if (!member.ID) {
+      toast.error("Member information is missing. Please log in.");
+      console.log("Member ID is invalid:", member);
+      return;
+    }
 
     if (currentParticipants < maxParticipants) {
       setLoading(true);
       try {
         const response = await CreateBooking(data);
-        console.log("API response:", response); // ตรวจสอบข้อมูลที่ได้รับจาก API
+        console.log("API response:", response); // Check the API response
 
         if (response) {
           setCurrentParticipants(prev => prev + 1);
           setHasJoined(true);
           toast.success("Successfully joined the class!");
           if (onBooking) {
-            onBooking(); // Optionally call onBooking if provided
+            onBooking(); // Call onBooking if provided
           }
         } else {
           toast.error("Failed to join the class. Please try again.");
@@ -75,10 +85,7 @@ const FitnessClassCard: React.FC<FitnessClassCardProps> = ({ fitnessClass }) => 
 
   // Handle cancel class
   const handleCancel = async () => {
-    // Optionally handle cancellation logic here
     // Assuming you have an API endpoint to cancel booking
-
-    // For now, we'll just update the state directly
     setCurrentParticipants(prev => prev - 1);
     setHasJoined(false);
     toast.success("Successfully left the class!");

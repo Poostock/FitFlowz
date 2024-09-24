@@ -5,7 +5,8 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import { FaRegCircleUser } from "react-icons/fa6";
 import FitnessClassCard, { FitnessClass } from "../../components/FitnessClassCard";
-import { GetClasses } from "../../service/https";
+import { GetClasses, GetMembers } from "../../service/https";
+import { MembersInterface } from "../../interfaces/IMember";
 
 // Extend dayjs to use timezone
 dayjs.extend(utc);
@@ -36,6 +37,7 @@ interface ClassData {
 const ClassComponent: React.FC = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [classes, setClasses] = useState<ClassData[]>([]);
+  const [member, setMember] = useState<MembersInterface | null>(null); // ดึงข้อมูลสมาชิก
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -48,15 +50,28 @@ const ClassComponent: React.FC = () => {
         setClasses(res);
       }
     } catch (error) {
-      console.error("Failed to fetch classes", error);
+      console.error("ดึงข้อมูลคลาสล้มเหลว", error);
+    }
+  };
+
+  const fetchMember = async () => {
+    try {
+      const res = await GetMembers();
+      if (res && res.ID) { // ตรวจสอบว่ามีข้อมูล ID ของสมาชิก
+        setMember(res);  
+      } else {
+        console.error("ไม่พบข้อมูลสมาชิกหรือ ID ไม่ถูกต้อง");
+      }
+    } catch (error) {
+      console.error("ดึงข้อมูลสมาชิกล้มเหลว", error);
     }
   };
 
   useEffect(() => {
     fetchClasses();
+    fetchMember(); // ดึงข้อมูลสมาชิก
   }, []);
 
-  // Convert ClassData to FitnessClass
   const mapToFitnessClass = (classData: ClassData): FitnessClass => ({
     id: classData.ID,
     name: classData.ClassName,
@@ -66,7 +81,7 @@ const ClassComponent: React.FC = () => {
     time: classData.EndDate,
     coach: classData.Trainer.Name,
     image: classData.ClassPic,
-    maxParticipants: 40, // You can update this to match your data
+    maxParticipants: 40, 
     currentParticipants: classData.ParticNum,
   });
 
@@ -91,9 +106,17 @@ const ClassComponent: React.FC = () => {
           </div>
         </div>
         <div className="grid gap-4 grid-cols-2 p-4">
-          {classes.map((fitnessClass) => (
-            <FitnessClassCard key={fitnessClass.ID} fitnessClass={mapToFitnessClass(fitnessClass)} />
-          ))}
+          {!member ? (
+            <p className="text-red-500">กรุณาล็อกอินเพื่อจองคลาส</p>
+          ) : (
+            classes.map((fitnessClass) => (
+              <FitnessClassCard 
+                key={fitnessClass.ID} 
+                fitnessClass={mapToFitnessClass(fitnessClass)} 
+                member={member}  // ส่งข้อมูล member
+              />
+            ))
+          )}
         </div>
       </div>
     </div>
