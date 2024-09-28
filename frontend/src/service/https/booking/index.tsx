@@ -1,4 +1,4 @@
-import { BookingInterface } from "../../interfaces/IBooking";
+import { BookingInterface } from "../../../interfaces/IBooking";
 
 const apiUrl = "http://localhost:3036";
 

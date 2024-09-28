@@ -6,7 +6,6 @@ import { RiDashboardFill } from "react-icons/ri";
 import { MdFitnessCenter } from "react-icons/md";
 import { FaRegClock } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
-import { FaRegDotCircle } from "react-icons/fa";
 
 
 interface MenuItem {
@@ -26,11 +25,8 @@ const SideBar: React.FC = () => {
         {
             title: "Class",
             icon: <FaRegClock />,
-            link: "/class",
-            submenu: [
-                { title: "Class Type", icon: <FaRegDotCircle />, link: "/class/classType" },
-                { title: "Trainer", icon: <FaRegDotCircle />, link: "/class/trainer" },
-            ],
+            link: "/classBooking",
+            
         },
         { title: "Equipments", icon: <MdFitnessCenter /> },
     ];

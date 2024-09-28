@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import React, { useState, useEffect } from "react";
-import { MembersInterface } from "../../../interfaces/IMember";
 import FitnessClassCard, { FitnessClass } from "../../../components/booking/FitnessClassCard";
 import Sidebar from "../../../components/booking/Sidebar";
 import { GetClasses } from "../../../service/https/class";
@@ -33,10 +32,8 @@ interface ClassData {
   ParticNum: number;
   ClassType: ClassType;
 }
-
 const ClassBooking: React.FC = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
-  const [member, ] = useState<MembersInterface | null>(null); // Fetch or set member data
 
 
   const fetchClasses = async () => {
@@ -79,7 +76,7 @@ const ClassBooking: React.FC = () => {
             <FitnessClassCard 
               key={fitnessClass.ID} 
               fitnessClass={mapToFitnessClass(fitnessClass)} 
-              member={member as MembersInterface}  // Pass member data (can be null, handle it inside FitnessClassCard)
+               // Pass member data (can be null, handle it inside FitnessClassCard)
             />
           ))}
         </div>

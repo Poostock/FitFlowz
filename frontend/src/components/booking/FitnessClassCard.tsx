@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { MdPeople } from "react-icons/md";
-import { jwtDecode, JwtPayload } from "jwt-decode"; // Import JwtPayload
 import toast, { Toaster } from "react-hot-toast";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -33,9 +32,6 @@ export interface FitnessClass {
 }
 
 // Extend JwtPayload to include your custom properties
-interface DecodedToken extends JwtPayload {
-  id: number; // Include the 'id' property
-}
 
 const FitnessClassCard: React.FC<FitnessClassCardProps> = ({ fitnessClass }) => {
   const { id, name, type, description, date, time, coach, image, maxParticipants, onBooking } = fitnessClass;
