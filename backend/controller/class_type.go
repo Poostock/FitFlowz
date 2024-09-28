@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"fitflowz/config"
 	"fitflowz/entity"
+	"fitflowz/config"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

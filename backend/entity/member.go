@@ -23,4 +23,6 @@ type Member struct {
 
 	Bookings []Booking `gorm:"foreignKey:MemberID"`
 
+	Payments [] Payment `gorm:"foreignKey:MemberID "`
+
 }

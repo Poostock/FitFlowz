@@ -1,10 +1,11 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 
-	"fitflowz/config"
 	"fitflowz/entity"
+	"fitflowz/config"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -12,64 +13,68 @@ import (
 
 // POST /classes
 func CreateClass(c *gin.Context) {
-	var class entity.Class
+    var class entity.Class
 
-	// bind เข้าตัวแปร class
-	if err := c.ShouldBindJSON(&class); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    // Bind to class variable
+    if err := c.ShouldBindJSON(&class); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-	db := config.DB()
+    // Log incoming request data
+    log.Printf("Received data: %+v\n", class)
 
-	// ค้นหา classtype ด้วย id
-	var classtype entity.ClassType
-	db.First(&classtype, class.ClassTypeID)
-	if classtype.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "classType not found"})
-		return
-	}
+    db := config.DB()
 
-	var trainer entity.Trainer
-	db.First(&trainer, class.TrainerID)
-	if trainer.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "trainer not found"})
-		return
-	}
+    // Validate classType
+    var classtype entity.ClassType
+    db.First(&classtype, class.ClassTypeID)
+    if classtype.ID == 0 {
+        c.JSON(http.StatusNotFound, gin.H{"error": "classType not found"})
+        return
+    }
 
-	// ค้นหา admin ด้วย id
-	var admin entity.Admin
-	db.First(&admin, class.AdminID)
-	if admin.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "admin not found"})
-		return
-	}
+    // Validate trainer
+    var trainer entity.Trainer
+    db.First(&trainer, class.TrainerID)
+    if trainer.ID == 0 {
+        c.JSON(http.StatusNotFound, gin.H{"error": "trainer not found"})
+        return
+    }
 
+    // Validate admin
+    var admin entity.Admin
+    db.First(&admin, class.AdminID)
+    if admin.ID == 0 {
+        c.JSON(http.StatusNotFound, gin.H{"error": "admin not found"})
+        return
+    }
 
-	// สร้าง Class
-	cl := entity.Class{
-		ClassName: class.ClassName,
-		Deets:  class.Deets,
-		StartDate:  class.StartDate,
-		EndDate:  class.EndDate,
-		TrainerID:  class.TrainerID,
-		Trainer: trainer,
-		ClassPic:  class.ClassPic,
-		ParticNum: class.ParticNum,
-		ClassTypeID:  class.ClassTypeID,
-		ClassType:    classtype, // โยงความสัมพันธ์กับ Entity ClassType
-		AdminID:  class.AdminID,
-		Admin:    admin, // โยงความสัมพันธ์กับ Entity Admin
-	}
+    // Create Class
+    cl := entity.Class{
+        ClassName: class.ClassName,
+        Deets:  class.Deets,
+        StartDate:  class.StartDate,
+        EndDate:  class.EndDate,
+        TrainerID:  class.TrainerID,
+        Trainer: trainer,
+        ClassPic:  class.ClassPic,
+        ParticNum: class.ParticNum,
+        ClassTypeID:  class.ClassTypeID,
+        ClassType:    classtype,
+        AdminID:  class.AdminID,
+        Admin:    admin,
+    }
 
-	// บันทึก
-	if err := db.Create(&cl).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    // Save to database
+    if err := db.Create(&cl).Error; err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": cl})
+    c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": cl})
 }
+
 
 // GET /class/:id
 func GetClass(c *gin.Context) {
@@ -149,4 +154,15 @@ func UpdateClass(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
+}
+
+// GET /classes/count
+func CountClasses(c *gin.Context) {
+	var count int64
+	db := config.DB()
+	if err := db.Model(&entity.Class{}).Count(&count).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"count": count})
 }

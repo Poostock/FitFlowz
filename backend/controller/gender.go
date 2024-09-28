@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 	"github.com/gin-gonic/gin"
-	"fitflowz/config"
 	"fitflowz/entity"
+	"fitflowz/config"
 
 )
 func ListGenders(c *gin.Context) {

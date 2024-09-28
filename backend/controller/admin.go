@@ -2,9 +2,8 @@ package controller
 
 import (
 	"net/http"
-
-	"fitflowz/config"
 	"fitflowz/entity"
+	"fitflowz/config"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,12 +30,12 @@ func CreateAdmin(c *gin.Context) {
 
 
 	// เข้ารหัสลับรหัสผ่านที่ผู้ใช้กรอกก่อนบันทึกลงฐานข้อมูล
-	hashedPassword, _ := config.HashPassword(admin.Password)
+	hashedPasswordAd, _ := config.HashPassword(admin.Password)
 
 	// สร้าง User
 	a := entity.Admin{
 		Username: admin.Username,
-		Password:  hashedPassword,
+		Password:  hashedPasswordAd,
 		Email:     admin.Email,
         FirstName: admin.FirstName,
         LastName:  admin.LastName,
@@ -125,3 +124,27 @@ func UpdateAdmin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
 }
+
+func CountStaffs(c *gin.Context) {
+    var adminCount int64
+    var trainerCount int64
+
+    db := config.DB()
+
+    // Count admins
+    if err := db.Model(&entity.Admin{}).Count(&adminCount).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Count trainers
+    if err := db.Model(&entity.Trainer{}).Count(&trainerCount).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Total count
+    totalCount := adminCount + trainerCount
+    c.JSON(http.StatusOK, gin.H{"count": totalCount})
+}
+

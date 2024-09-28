@@ -1,7 +1,4 @@
-import { BookingInterface } from "../../interfaces/IBooking";
-import { ClassesInterface } from "../../interfaces/IClass";
-import { ClassTypesInterface } from "../../interfaces/IClassType";
-import { MembersInterface } from "../../interfaces/IMember";
+import { SignInInterface } from "../../interfaces/ISignIn";
 
 const apiUrl = "http://localhost:3036";
 
@@ -14,67 +11,36 @@ const fetchData = async (url: string, options: RequestInit) => {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        return response.status === 204 ? true : await response.json();
+        // Return `true` for a `204 No Content` response, otherwise return JSON
+        if (response.status === 204) {
+            return true;
+        }
+
+        // Handle other cases where the response contains JSON
+        return await response.json();
     } catch (error) {
         console.error("Fetch error:", error);
-        return false;
+        throw error; // Rethrow the error
     }
 };
 
-async function GetClasses() {
-    const requestOptions = {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    };
-
-    return await fetchData(`${apiUrl}/classes`, requestOptions);
-}
-
-async function GetClassById(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "GET",
-    };
-
-    return await fetchData(`${apiUrl}/class/${id}`, requestOptions);
-}
-
-async function CreateClass(data: ClassesInterface) {
+async function SignIn(data: SignInInterface) {
     const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
     };
 
-    return await fetchData(`${apiUrl}/classes`, requestOptions);
+    try {
+        const result = await fetchData(`${apiUrl}/login`, requestOptions);
+        return result;
+    } catch (error) {
+        console.error("SignIn failed:", error);
+        throw error; // Rethrow the error to handle it in the calling function
+    }
 }
 
-async function UpdateClass(data: ClassesInterface) {
-    const requestOptions = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/classes`, requestOptions);
-}
-
-async function DeleteClassByID(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "DELETE",
-    };
-
-    return await fetchData(`${apiUrl}/classes/${id}`, requestOptions);
-}
-
-// ---------------------------------------------ClassType---------------------------------------------------
-
-async function GetClassTypes() {
+async function CountMembers() {
     const requestOptions = {
         method: "GET",
         headers: {
@@ -82,51 +48,10 @@ async function GetClassTypes() {
         },
     };
 
-    return await fetchData(`${apiUrl}/classtypes`, requestOptions);
+    return await fetchData(`${apiUrl}/members/count`, requestOptions);
 }
 
-async function GetClassTypeById(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "GET",
-    };
-
-    return await fetchData(`${apiUrl}/classtype/${id}`, requestOptions);
-}
-
-async function CreateClassType(data: ClassTypesInterface) {
-    const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/classtypes`, requestOptions);
-}
-
-async function UpdateClassType(data: ClassTypesInterface) {
-    const requestOptions = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/classtypes`, requestOptions);
-}
-
-async function DeleteClassTypesByID(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "DELETE",
-    };
-
-    return await fetchData(`${apiUrl}/classtypes/${id}`, requestOptions);
-}
-
-// ----------------------------------------------------------------Trainer--------------------------------
-async function GetTrainers() {
+async function CountClasses() {
     const requestOptions = {
         method: "GET",
         headers: {
@@ -134,50 +59,10 @@ async function GetTrainers() {
         },
     };
 
-    return await fetchData(`${apiUrl}/trainers`, requestOptions);
+    return await fetchData(`${apiUrl}/classes/count`, requestOptions);
 }
 
-async function GetTrainerById(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "GET",
-    };
-
-    return await fetchData(`${apiUrl}/trainer/${id}`, requestOptions);
-}
-
-async function CreateTrainer(data: ClassTypesInterface) {
-    const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/trainers`, requestOptions);
-}
-
-async function UpdateTrainer(data: ClassTypesInterface) {
-    const requestOptions = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/trainers`, requestOptions);
-}
-
-async function DeleteTrainerByID(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "DELETE",
-    };
-
-    return await fetchData(`${apiUrl}/trainers/${id}`, requestOptions);
-}
-// -------------------------------------------------Admin--------------- --------------------------------
-async function GetAdmins() {
+async function CountStaffs() {
     const requestOptions = {
         method: "GET",
         headers: {
@@ -185,123 +70,9 @@ async function GetAdmins() {
         },
     };
 
-    return await fetchData(`${apiUrl}/admins`, requestOptions);
+    return await fetchData(`${apiUrl}/staffs/count`, requestOptions);
 }
 
-//--------------------------------------------------Booking---------------------------------------------------
-async function GetBooking() {
-    const requestOptions = {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    };
 
-    return await fetchData(`${apiUrl}/classes`, requestOptions);
-}
 
-async function GetBookingId(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "GET",
-    };
-
-    return await fetchData(`${apiUrl}/class/${id}`, requestOptions);
-}
-
-async function CreateBooking(data: BookingInterface) {
-    const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/bookings`, requestOptions);
-}
-
-async function UpdateBooking(data: BookingInterface) {
-    const requestOptions = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/classes`, requestOptions);
-}
-
-async function DeleteBookingID(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "DELETE",
-    };
-
-    return await fetchData(`${apiUrl}/classes/${id}`, requestOptions);
-}
-
-//--------------------------------------------------Member---------------------------------------------------
-
-async function GetMembers() {
-    const requestOptions = {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    };
-
-    return await fetchData(`${apiUrl}/members`, requestOptions);
-}
-
-async function GetMemberById(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "GET",
-    };
-
-    return await fetchData(`${apiUrl}/member/${id}`, requestOptions);
-}
-
-async function CreateMember(data: MembersInterface) {
-    const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/members`, requestOptions);
-}
-
-async function UpdateMember(data: MembersInterface) {
-    const requestOptions = {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };
-
-    return await fetchData(`${apiUrl}/members`, requestOptions);
-}
-
-async function DeleteMemberByID(id: number | undefined) {
-    if (id === undefined) return false;
-
-    const requestOptions = {
-        method: "DELETE",
-    };
-
-    return await fetchData(`${apiUrl}/members/${id}`, requestOptions);
-}
-
-async function GetGenders() {
-    const requestOptions = {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    };
-
-    return await fetchData(`${apiUrl}/genders`, requestOptions);
-}
-
-export { GetGenders,GetMembers,GetMemberById,CreateMember,UpdateMember,DeleteMemberByID, GetClasses, GetClassById, CreateClass, UpdateClass, DeleteClassByID, GetClassTypes, CreateClassType, GetClassTypeById, UpdateClassType, DeleteClassTypesByID, GetTrainers, GetTrainerById, CreateTrainer, UpdateTrainer, DeleteTrainerByID, GetAdmins, GetBooking, GetBookingId, CreateBooking, UpdateBooking, DeleteBookingID };
+export { SignIn, CountMembers, CountClasses, CountStaffs };
